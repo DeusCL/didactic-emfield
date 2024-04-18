@@ -27,6 +27,10 @@ class Widget:
 		pass
 
 
+	def clone(self):
+		pass
+
+
 	@property
 	def pos(self):
 		ox, oy = self.offset
@@ -208,21 +212,27 @@ class Label(Widget):
 
 
 class Button(Widget):
-	def __init__(self, app, pos, size, text):
-		super().__init__(app, pos)
+	def __init__(self, guim, pos, size, text="", on_pressed=None,
+		on_pressed_args=None, autopress_key=None, img=None):
+
+		super().__init__(guim, pos)
 
 		self.size = size
-		self.label = Label(app, (0, 0), text, True, COLOR_TEXT)
-
-		self.text = self.label.text
+		self.label = Label(guim, (0, 0), text, True, COLOR_TEXT)
 
 		self.hovering = False
 		self.pressing = False
 
-		self.img = None
+		self.img = img
 
-		self.on_pressed = None
-		self.on_pressed_args = ()
+		self.on_pressed = on_pressed
+
+		if on_pressed_args is None:
+			self.on_pressed_args = ()
+		else:
+			self.on_pressed_args = on_pressed_args
+
+		self.autopress_key = autopress_key
 
 
 	def check_hovering(self):
@@ -264,9 +274,30 @@ class Button(Widget):
 
 				self.pressing = False
 
+		if event.type == pg.KEYDOWN:
+			if event.key == self.autopress_key:
+				self.on_pressed(*self.on_pressed_args)
+
 
 	def update(self):
 		self.check_hovering()
+
+
+	def clone(self, **kwargs):
+		new_button = Button(self.guim, self.pos, self.size,
+			text = self.label.text,
+			on_pressed = self.on_pressed,
+			on_pressed_args = self.on_pressed_args,
+			autopress_key = self.autopress_key
+		)
+
+		# Update attributes with values from kwargs
+		for key, value in kwargs.items():
+			setattr(new_button, key, value)
+
+		return new_button
+
+
 
 
 	def render(self, surface):

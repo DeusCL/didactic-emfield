@@ -5,7 +5,9 @@ from settings import *
 from gui import Widget
 
 class TextField(Widget):
-	def __init__(self, guim, pos, size, caption="", dtype=str):
+	def __init__(self, guim, pos, size, caption="", dtype=str,
+		verificator=None):
+
 		"""
 		Initialize the TextField object.
 

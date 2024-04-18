@@ -38,145 +38,147 @@ class GuiManager:
 			return good
 
 
-		# Make a textfield test
-		textfield1 = TextField(self, (0, 20),
+		###### >>> TEXTFIELDS <<< #######
+		# Textfield to type the Particle Position
+		tf_pos = TextField(self, (0, 20),
 			size = (125, 30),
-			caption = "Posición (m)"
+			caption = "Posición (m)",
+			verificator = verificator
 		)
 
-		textfield1.verificator = verificator
-
-		textfield2 = TextField(self, (140, 20),
+		# Textfield to type the Particle Charge
+		tf_particle_charge = TextField(self, (140, 20),
 			size = (100, 30),
 			caption = "Carga",
 			dtype = float
 		)
 
-		# Make a button that says Ok
-		btn_ok = Button(self, (180, 65), (60, 25), "Ok")
-		btn_ok.on_pressed = self.add_prtl
-		btn_ok.on_pressed_args = (textfield1, textfield2,)
-
-		# Make a button that says Cancelar
-		btn_cancel = Button(self, (0, 65), (100, 25), "Cancelar")
-		btn_cancel.on_pressed = self.close_dialog
-
-		# Make a dialog test
-		dialog_add_prtl = Dialog(self, "Colocar carga eléctrica",
-			[textfield1, textfield2, btn_ok, btn_cancel]
-		)
-
-
-		# Make a button to place a particle
-		btn_add_prtl = Button(self, (10, 10), (60, 60), "")
-		btn_add_prtl.on_pressed = self.open_dialog
-		btn_add_prtl.on_pressed_args = (dialog_add_prtl,)
-		btn_add_prtl.img = pg.image.load(IMG_CHARGE)
-
-
-		# Make a button to remove a particle
-		btn_del_prtl = Button(self, (80, 10), (60, 60), "")
-		btn_del_prtl.on_pressed = self.scene.remove_the_selected
-		btn_del_prtl.img = pg.image.load(IMG_TRASH)
-
-
-
-
-
-
-		# Make a textfield test
-		snsr_pos = TextField(self, (0, 20),
-			size = (125, 30),
-			caption = "Posición (m)"
-		)
-
-		snsr_pos.verificator = verificator
-
-		# Make a button that says Ok
-		btn_ok = Button(self, (180, 65), (60, 25), "Ok")
-		btn_ok.on_pressed = self.add_snsr
-		btn_ok.on_pressed_args = (snsr_pos,)
-
-		# Make a dialog to place a sensor
-		dialog_add_snsr = Dialog(self, "Colocar sensor",
-			[snsr_pos, btn_ok, btn_cancel]
-		)
-
-
-
-		# Make a button to place a sensor
-		btn_add_snsr = Button(self, (150, 10), (60, 60), "")
-		btn_add_snsr.on_pressed = self.open_dialog
-		btn_add_snsr.on_pressed_args = (dialog_add_snsr,)
-		btn_add_snsr.img = pg.image.load(IMG_SENSOR)
-
-		font2 = pg.font.Font(FONT_2, 18)
-
-
-		# Make a label that shows info
-		self.info_label = Label(self, (10, 100),
-			"", True, WHITE, font2
-		)
-
-		# Make a label that shows info
-		self.info_label_charge = Label(self, (17, 120),
-			"", True, WHITE, font2
-		)
-
-		# Make a label that shows info
-		self.info_label_position = Label(self, (17, 140),
-			"", True, WHITE, font2
-		)
-
-		# Make a label that shows info
-		self.info_label_E = Label(self, (17, 160),
-			"", True, WHITE, font2
-		)
-
-
-		# Make a textfield to type the name of the saving scene
-		scene_name_textfield = TextField(self, (0, 20),
+		# Textfield to type the name of the saving scene
+		tf_scene_name = TextField(self, (0, 20),
 			size = (240, 30),
 			caption = "Nombre de la escena:"
 		)
 
 
+		###### >>> BUTTONS <<< #######
+		# Button to confirm and place the particle
+		btn_place_particle = Button(self, (180, 65), (60, 25),
+			text = "Ok",
+			on_pressed = self.add_particle,
+			on_pressed_args = (tf_pos, tf_particle_charge,),
+			autopress_key = pg.K_RETURN
+		)
+
+		# Button to confirm and place a sensor
+		btn_place_sensor = btn_place_particle.clone(
+			on_pressed=self.add_sensor,
+			on_pressed_args = (tf_pos,),
+		)
+
+		# Button to cancel any operation and close the current dialog
+		btn_cancel = Button(self, (0, 65), (100, 25),
+			text = "Cancelar",
+			on_pressed = self.close_dialog,
+			autopress_key = pg.K_ESCAPE
+		)
+
 		# Make a button to confirm the saving of the scene
-		btn_confirm_save = Button(self, (140, 65), (100, 25), "Guardar")
-		btn_confirm_save.on_pressed = self.save_scene
-		btn_confirm_save.on_pressed_args = (scene_name_textfield,)
+		btn_confirm_save = Button(self, (140, 65), (100, 25),
+			text = "Guardar",
+			on_pressed = self.save_scene,
+			on_pressed_args = (tf_scene_name,),
+			autopress_key = pg.K_RETURN
+		)
 
 
-		# Make a dialog to type the name of the saving scene
+		###### >>> DIALOGS <<< #######
+		# Dialog to create a new particle
+		dialog_new_particle = Dialog(self,
+			title="Nueva carga eléctrica",
+			elements=[
+				tf_pos,
+				tf_particle_charge,
+				btn_place_particle,
+				btn_cancel
+			]
+		)
+
+		# Dialog to create a new sensor
+		dialog_new_sensor = Dialog(self,
+			title="Nuevo sensor",
+			elements=[
+				tf_pos,
+				btn_place_sensor,
+				btn_cancel
+			]
+		)
+
+		# Dialog to type the name of the saving scene
 		dialog_save_scene = Dialog(self,
 			title="Guardar escena",
 			elements=[
-				scene_name_textfield,
+				tf_scene_name,
 				btn_confirm_save,
 				btn_cancel
 			]
 		)
 
 
+		###### >>> MAIN BUTTONS <<< #######
+		# Button to create a new particle
+		self.add_gui_element("btn_new_particle",
+			Button(self, (10, 10), (60, 60), "",
+				on_pressed = self.open_dialog,
+				on_pressed_args = (dialog_new_particle,),
+				img = pg.image.load(IMG_CHARGE)
+			)
+		)
 
-		# Make a button to save the current scene
-		btn_save = Button(self, (220, 10), (60, 60), "")
-		btn_save.on_pressed = self.open_dialog
-		btn_save.on_pressed_args = (dialog_save_scene,)
-		btn_save.img = pg.image.load(IMG_SAVE)
+		# Button to place a sensor
+		self.add_gui_element("btn_new_sensor",
+			Button(self, (80, 10), (60, 60), "",
+				on_pressed = self.open_dialog,
+				on_pressed_args = (dialog_new_sensor,),
+				img = pg.image.load(IMG_SENSOR)
+			)
+		)
+
+		# Button to remove a particle
+		self.add_gui_element("btn_remove_particle",
+			Button(self, (150, 10), (60, 60), "",
+				on_pressed = self.scene.remove_the_selected,
+				img = pg.image.load(IMG_TRASH)
+			)
+		)
+
+		# Button to save the current scene
+		self.add_gui_element("btn_save_scene",
+			Button(self, (220, 10), (60, 60), "",
+				on_pressed = self.open_dialog,
+				on_pressed_args = (dialog_save_scene,),
+				img = pg.image.load(IMG_SAVE)
+			)
+		)
 
 
+		###### >>> INFO LABELS <<< #######
+		font2 = pg.font.Font(FONT_2, 18)
 
-		self.add_gui_element(btn_add_prtl, "button_1")
-		self.add_gui_element(btn_del_prtl, "button_2")
-		self.add_gui_element(btn_add_snsr, "button_3")
-		self.add_gui_element(btn_save, "save")
+		self.add_gui_element("lb_info_title",
+			Label(self, (10, 100), "", True, WHITE, font2)
+		)
 
-		self.add_gui_element(self.info_label, "label_1")
-		self.add_gui_element(self.info_label_charge, "label_2")
-		self.add_gui_element(self.info_label_position, "label_3")
-		self.add_gui_element(self.info_label_E, "label_4")
+		self.add_gui_element("lb_info_position",
+			Label(self, (17, 120), "", True, WHITE, font2)
+		)
 
+		self.add_gui_element("lb_info_charge",
+			Label(self, (17, 140), "", True, WHITE, font2)
+		)
+
+		self.add_gui_element("lb_info_force",
+			Label(self, (17, 160), "", True, WHITE, font2)
+		)
 
 
 	def save_scene(self, scene_name_textfield):
@@ -186,28 +188,18 @@ class GuiManager:
 			self.close_dialog()
 
 
-	def add_snsr(self, field_pos):
-		if field_pos.invalid_value:
-			return
-
-		pos_str = field_pos.text
-
-		if pos_str == "":
+	def add_sensor(self, field_pos):
+		if field_pos.invalid_value or field_pos.text == "":
 			return
 
 		pos = tuple(map(float, pos_str.split(',')))
-
-		x, y = pos
-
-		snsr = Sensor((x, -y))
-		self.scene.add(snsr)
-
-		self.scene.last_grabbed_particle = snsr
-
+		sensor = Sensor((pos[0], -pos[1]))
+		self.scene.add(sensor)
+		self.scene.last_grabbed_particle = sensor
 		self.close_dialog()
 
 
-	def add_prtl(self, field_pos, field_charge):
+	def add_particle(self, field_pos, field_charge):
 		if field_pos.invalid_value or field_charge.invalid_value:
 			return
 
@@ -221,14 +213,9 @@ class GuiManager:
 			charge_str = 1
 
 		pos = tuple(map(float, pos_str.split(',')))
-		charge = float(charge_str)
-
-		x, y = pos
-
-		prtl = Carga((x, -y), charge)
+		prtl = Carga((pos[0], -pos[1]), float(charge_str))
 
 		self.scene.add(prtl)
-
 		self.scene.last_grabbed_particle = prtl
 
 		self.close_dialog()
@@ -242,15 +229,11 @@ class GuiManager:
 		self.dialog_to_show = None
 
 
-	def add_gui_element(self, element, element_name):
+	def add_gui_element(self, element_name, element):
 		self.gui_elements[element_name] = element
 
 
 	def handle_event(self, event):
-		if event.type == pg.KEYDOWN:
-			if event.key == pg.K_ESCAPE and self.dialog_to_show is not None:
-				self.close_dialog()
-
 		for element in self.gui_elements.values():
 			element.handle_event(event)
 
@@ -261,23 +244,29 @@ class GuiManager:
 	def update(self):
 		prtl = self.scene.last_grabbed_particle
 
+		lb_title = self.gui_elements["lb_info_title"]
+		lb_position = self.gui_elements["lb_info_position"]
+		lb_charge = self.gui_elements["lb_info_charge"]
+		lb_force = self.gui_elements["lb_info_force"]
+
+
 		if prtl is not None:
-			self.info_label.text = "Información:"
+			lb_title.text = "Información:"
 			x, y = prtl.pos
-			self.info_label_position.text = f"- Posición: {x}î + {-y}ĵ"
-			self.info_label_charge.text = f"- Carga: {prtl.charge}μC"
+			lb_position.text = f"- Posición: {x}î + {-y}ĵ"
+			lb_charge.text = f"- Carga: {prtl.charge}μC"
 
 			if prtl.charge == 0:
 				cx, cy = prtl.electric_field
-				self.info_label_E.text = f"- Campo: {cx}î + {-cy}ĵ"
+				lb_force.text = f"- Fuerza: {cx}î + {-cy}ĵ"
 			else:
-				self.info_label_E.text = ""
+				lb_force.text = ""
 
 		else:
-			self.info_label.text = ""
-			self.info_label_position.text = ""
-			self.info_label_charge.text = ""
-			self.info_label_E.text = ""
+			lb_title.text = ""
+			lb_position.text = ""
+			lb_charge.text = ""
+			lb_force.text = ""
 
 
 		for element in self.gui_elements.values():
@@ -306,12 +295,6 @@ class GuiManager:
 		self.scene.controls_active = self.dialog_to_show is None
 
 		if self.dialog_to_show is not None:
-
-			#pg.transform.gaussian_blur(
-			#	self.app.window.copy(), 10,
-			#	dest_surface = self.app.window
-			#)
-
 			surface.blit(self.dialog_bg, (0, 0))
 
 			self.dialog_to_show.render(surface)
