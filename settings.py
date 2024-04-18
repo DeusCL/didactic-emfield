@@ -1,0 +1,66 @@
+from pathlib import Path
+
+# display
+WIN_RES = (1600, 900)
+FULLSCREEN = False
+TARGET_FPS = 60.0
+SHOW_FPS = False
+VSYNC = True
+BG_COLOR = 0, 0, 0
+
+# paths
+ASSETS_DIR = Path("assets/")
+FONTS_DIR = ASSETS_DIR / "fonts/"
+CURSORS_DIR = ASSETS_DIR / "cursors/"
+IMAGES_DIR = ASSETS_DIR / "imgs/"
+SCENES_DIR = Path("scenes/")
+SCREENSHOTS_DIR = Path("screenshots/")
+
+# fonts
+FONT_1 = FONTS_DIR / "cmunbi.ttf"
+FONT_2 = FONTS_DIR / "consolab.ttf"
+
+# images
+IMG_CHARGE = IMAGES_DIR / "carga.png"
+IMG_TRASH = IMAGES_DIR / "trash_icon.png"
+IMG_SENSOR = IMAGES_DIR / "sensor.png"
+IMG_SAVE = IMAGES_DIR / "save_icon.png"
+
+# cursors
+CURSOR_HAND_OPEN_FILEPATH = CURSORS_DIR / "open_hand.png"
+CURSOR_HAND_CLOSED_FILEPATH = CURSORS_DIR / "closed_hand.png"
+CURSOR_TEXT_MARKER_FILEPATH = CURSORS_DIR / "textmarker.png"
+CURSOR_NORMAL = 0
+CURSOR_HAND_FINGER = 1
+CURSOR_HAND_OPEN = 2
+CURSOR_HAND_CLOSED = 3
+CURSOR_TEXT_MARKER = 4
+
+# simulator
+ARROW_SPREAD = 1.0
+ARROW_LENGTH = 0.7
+ARROW_CENTERED = True
+K = 8.99e9
+
+
+# colors
+DARK_GRAY_2 = (43, 43, 43)
+DARK_GRAY = (34, 38, 42)
+GRAY = (48, 56, 65)
+WHITE = (216, 222, 233)
+GREEN = (153, 199, 148)
+RED = (236, 96, 102)
+BLUE = (102, 153, 204)
+LIGHT_GRAY = (76, 88, 99)
+LIGHT_GRAY2 = (100, 115, 130)
+ORANGE = (249, 174, 88)
+BACKGROUND = DARK_GRAY
+
+ITEM1 = (46, 51, 56)
+ITEM2 = (39, 43, 48)
+
+COLOR_BG_1 = DARK_GRAY
+COLOR_BG_2 = GRAY
+COLOR_OUTLINE_1 = (71, 83, 96)
+COLOR_OUTLINE_2 = GREEN
+COLOR_TEXT = WHITE
