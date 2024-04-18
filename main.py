@@ -83,7 +83,7 @@ class App:
 
 	def save_screenshot(self):
 		now = datetime.datetime.now()
-		imgname = now.strftime("%m%d%Y %H%M%S.png")
+		imgname = now.strftime("%m%d%Y%H%M%S.png")
 		imgfilepath = SCREENSHOTS_DIR / imgname
 		os.makedirs(SCREENSHOTS_DIR, exist_ok = True)
 
