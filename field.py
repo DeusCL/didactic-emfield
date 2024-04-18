@@ -49,5 +49,5 @@ class Field:
 
 				s_pos, e_pos = maths.Q_arrow((x, y), efield, scale2)
 
-				cdraw.arrow2(surface, (100, 255, 255, alpha), s_pos, e_pos)
+				cdraw.arrow(surface, (100, 255, 255, alpha), s_pos, e_pos)
 
