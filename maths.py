@@ -1,5 +1,4 @@
 import math
-import struct
 
 from settings import *
 from numba import njit
