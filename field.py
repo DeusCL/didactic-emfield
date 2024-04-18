@@ -6,8 +6,6 @@ import math
 
 import sys
 
-import numpy as np
-
 from settings import *
 
 
@@ -23,8 +21,6 @@ class Field:
 		w, h = pg.display.get_window_size()
 		x_off, y_off = int(offset_pos[0]), int(offset_pos[1])
 
-
-
 		spread_scale = scale*ARROW_SPREAD
 		scale2 = scale
 
@@ -35,12 +31,8 @@ class Field:
 			scale2 /= 4
 			self.scene.camera.speed /= 4
 
-		#ss2 = scale
-		#print(f"{spread_scale=:.2f}  {scale=:.2f} {ss2=:.2f}")
-
 		x_points = int(w/spread_scale) + 3
 		y_points = int(h/spread_scale) + 3
-
 
 		for i in range(x_points):
 			x = ((i*spread_scale + x_off) % (x_points*spread_scale)) - spread_scale
