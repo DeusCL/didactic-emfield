@@ -16,46 +16,8 @@ def normalize_vector(vector, magnitude):
 	return vector[0] / magnitude, vector[1] / magnitude
 
 
-
-def scale_vector(vector, factor):
-	return [vector[0]*factor, vector[1]*factor]
-
-
 def smooth_step(start_value, target_value, smoothness=10, dt=1/60.0):
 	return start_value + (target_value-start_value)*(10/smoothness)*dt
-
-def dist(p1, p2):
-	return math.sqrt((p2[0]-p1[0])**2 + (p2[1]-p1[1])**2)
-
-
-
-def calc_electric_field(charges, px, py):
-	sum_E = [0, 0]
-
-	for charge in charges:
-		vr = px-charge.pos[0], py-charge.pos[1]
-		r = math.sqrt(vr[0]**2 + vr[1]**2)
-		if r < 0.1: return None
-		vr = vr[0]/r, vr[1]/r
-		pre_E = (9e-9*charge.charge*(10**-6))/(r**3)
-		sum_E = sum_E[0] + pre_E*vr[0], sum_E[1] + pre_E*vr[1]
-
-	return sum_E
-
-
-def Q_sqrt_c_bad(x):
-	"""
-	Fast inverse square root algorithm cubed.
-	"""
-	# Convert the input to 32-bit floating point representation
-	x = float(x)
-	# Convert the bits of the floating-point number into an integer
-	i = 0x5f3759df - (x >> 1)
-	# Convert the integer back to floating-point
-	y = float(i)
-	# Perform one iteration of Newton's method to refine the estimate
-	y = y * (1.5 - 0.5 * x * y * y)
-	return y*y*y
 
 
 @njit
@@ -64,11 +26,13 @@ def Q_rsqrt_c(number):
 		return 0
 	return 1/math.sqrt(number)**3
 
+
 @njit
 def Q_rsqrt(number):
 	if number == 0:
 		return 0
 	return 1/math.sqrt(number)
+
 
 @njit
 def calc_sum(c, cx, cy, px, py):
@@ -86,21 +50,6 @@ def Q_norm(vect):
 	rsqrt = Q_rsqrt(x * x + y * y)
 	return x*rsqrt, y*rsqrt
 
-
-
-
-"""
-
-E = maths.Q_norm(efield)
-
-w, h = E[0]*scale*ARROW_LENGTH, E[1]*scale*ARROW_LENGTH
-
-cdraw.arrow2(surface, (100, 255, 255, alpha),
-	(x-(w/2)*ARROW_CENTERED, y-(h/2)*ARROW_CENTERED),
-	(x+w - (w/2)*ARROW_CENTERED, y+h - (h/2)*ARROW_CENTERED)
-)
-
-"""
 
 
 @njit
@@ -141,8 +90,7 @@ def get_dist(start_pos, end_pos):
 	return math.sqrt(dx**2 + dy**2)
 
 
-
-@njit(fastmath=True)
+@njit
 def calc_arrow_points(spos, epos, arrow_size):
 	angle = math.atan2(epos[1] - spos[1], epos[0] - spos[0])
 
