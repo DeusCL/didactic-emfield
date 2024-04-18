@@ -3,17 +3,6 @@ import math
 from settings import *
 from numba import njit
 
-def normalize_vector(vector, magnitude):
-	if vector is None:
-		return None
-
-	#magnitude = math.sqrt(vector[0] ** 2 + vector[1] ** 2)
-
-	if magnitude < 10e-23:
-		return None  # El vector nulo no puede normalizarse
-
-	return vector[0] / magnitude, vector[1] / magnitude
-
 
 def smooth_step(start_value, target_value, smoothness=10, dt=1/60.0):
 	return start_value + (target_value-start_value)*(10/smoothness)*dt
