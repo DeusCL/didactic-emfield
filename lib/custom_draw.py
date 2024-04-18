@@ -1,7 +1,6 @@
-import math
-import maths
-
 import pygame as pg
+
+from . import maths
 
 from settings import ARROW_CENTERED
 

@@ -5,9 +5,11 @@ import pyautogui
 import datetime
 import os
 
-from scene import Scene
+from lib.scene import Scene
+from lib.gui_manager import GuiManager
+
 from settings import *
-from gui_manager import GuiManager
+
 
 
 class App:

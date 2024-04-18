@@ -1,8 +1,11 @@
 import pygame as pg
 import pyperclip
 
+from .gui import Widget
+
 from settings import *
-from gui import Widget
+
+
 
 class TextField(Widget):
 	def __init__(self, guim, pos, size, caption="", dtype=str,

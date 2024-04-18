@@ -1,4 +1,4 @@
-from particle import Carga, Sensor
+from .particle import Carga, Sensor
 
 add(Carga((7, 0), 4.4))
 add(Carga((-5, -5), 4.4))

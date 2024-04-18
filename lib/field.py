@@ -1,12 +1,10 @@
 import pygame as pg
-import custom_draw as cdraw
 
-import maths
-import math
-
-import sys
+from . import custom_draw as cdraw
+from . import maths
 
 from settings import *
+
 
 
 class Field:

@@ -1,16 +1,16 @@
 import os
 import pygame as pg
 
-from grid import Grid
-from camera import Camera
-from field import Field
+from . import maths
+from .grid import Grid
+from .camera import Camera
+from .field import Field
+from .particle import *
 
 import random
 import math
-import maths
 
 from settings import *
-from particle import *
 
 
 class Scene:

@@ -1,10 +1,11 @@
 import pygame as pg
 
-from gui import *
-from text_field import TextField
+from .gui import *
+from .text_field import TextField
+from .particle import Carga, Sensor
+
 from settings import *
 
-from particle import Carga, Sensor
 
 
 class GuiManager:

@@ -1,5 +1,8 @@
-import maths
 import pygame as pg
+
+from . import maths
+
+
 
 class Camera:
 	def __init__(self, app, pos=(0, 0)):

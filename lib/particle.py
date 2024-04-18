@@ -1,15 +1,9 @@
 import pygame as pg
 
-from pygame._sdl2.video import Texture
-
-import maths
-import custom_draw as cdraw
-import math
-
-import sys
+from . import maths
+from . import custom_draw as cdraw
 
 from settings import *
-
 
 
 
