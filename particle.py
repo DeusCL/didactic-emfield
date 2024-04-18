@@ -20,7 +20,7 @@ class CargaLibre:
 		self.size = 0.000001
 		self.vel = 0, 0
 		self.charge = charge
-
+		self.F = 0, 0
 
 
 	def get_size(self, scale):
@@ -38,10 +38,10 @@ class CargaLibre:
 		prtls = list(set(self.scene.particles + self.scene.charges) - {self})
 
 		E, alpha = maths.calc_E(prtls, x, y)
-		F = E[0]*self.charge * 10**-6, E[1]*self.charge * 10**-6
+		self.F = E[0]*self.charge * 10**-6, E[1]*self.charge * 10**-6
 
 		mag = alpha/255
-		nx, ny = maths.Q_norm(F)
+		nx, ny = maths.Q_norm(self.F)
 
 		self.vel = vx + nx*mag*speed*dt, vy + ny*mag*speed*dt
 
@@ -51,6 +51,20 @@ class CargaLibre:
 
 	def render(self, surface, scale, offset_pos):
 		x, y = self.pos[0]*scale + offset_pos[0], self.pos[1]*scale + offset_pos[1]
+
+		px, py = self.pos
+
+		rscale = 1000
+
+		if self.F != (0, 0):
+			w, h = min(1000, self.F[0]*scale*rscale), min(1000, self.F[1]*scale*rscale)
+
+			s_pos = x, y
+			e_pos = x + w, y + h
+
+			cdraw.arrow(surface, (170, 255, 170), s_pos, e_pos, 15)
+
+
 		draw_color = (255,166,255)*(self.charge>0) + (166, 255, 255)*(self.charge<0) + (255,)*3*(self.charge==0)
 		size = self.get_size(scale)
 		pg.draw.circle(surface, draw_color, (x, y), size)
@@ -84,9 +98,6 @@ class Carga:
 
 		pg.draw.circle(surface, draw_color, (x, y), size)
 
-		#cdraw.draw_regular_polygon(self.renderer, (x, y), 10, size)
-
-
 
 
 class Sensor(Carga):
@@ -98,24 +109,17 @@ class Sensor(Carga):
 		self.magnitude = 0
 
 
-
-	def calc_electric_field(self):
-		px, py = self.pos
-		return maths.calc_E(self.scene.charges, px, py)
-
-
 	def render(self, surface, scale, offset_pos):
 		x, y = self.pos[0]*scale + offset_pos[0], self.pos[1]*scale + offset_pos[1]
+		px, py = self.pos
 
-		self.electric_field = self.calc_electric_field()
-		self.magnitude = math.sqrt(self.electric_field[0] ** 2 + self.electric_field[1] ** 2)
+		self.electric_field, alpha = maths.calc_E(self.scene.charges, px, py)
 
-		alpha = max(0.5, min(255, self.magnitude/7.02e-16))
-
-		E = maths.normalize_vector(self.electric_field, self.magnitude)
+		E = self.electric_field
+		rscale = 1000
 
 		if E is not None:
-			w, h = E[0]*scale*alpha, E[1]*scale*alpha
+			w, h = min(1000, E[0]*scale/rscale), min(1000, E[1]*scale/rscale)
 
 			s_pos = x, y
 			e_pos = x + w, y + h
