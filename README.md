@@ -4,8 +4,8 @@ didactic-emfield (Didactic Electromagnetic Field) is an electromagnetic field si
 ![Alt Text](screenshots/04172024233456.png)
 
 ## Installation:
-1) Clone the repository: `git clone https://github.com/DeusCL/pyexcel.git`
-2) Go to the project directory: `cd pyexcel`
+1) Clone the repository: `git clone https://github.com/DeusCL/didactic-emfield.git`
+2) Go to the project directory: `cd didactic-emfield`
 3) Install dependencies: `pip install -r requirements.txt`
 
 
