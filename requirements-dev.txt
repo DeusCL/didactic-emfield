@@ -1,2 +1,4 @@
 pyrefly
+pytest
+ruff
 types-pyperclip

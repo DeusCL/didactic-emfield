@@ -1,0 +1,28 @@
+# Configuración de las herramientas de desarrollo (pytest y ruff).
+# El chequeo de tipos se configura en pyrefly.toml.
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# La app se ejecuta desde la raíz del repo (python main.py): los tests también.
+pythonpath = ["."]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+exclude = [".venv"]
+
+[tool.ruff.format]
+# El proyecto usa tabuladores (ver docs/implementation-plan.md).
+indent-style = "tab"
+
+[tool.ruff.lint]
+# Conjunto explícito: no depender de los defaults de cada versión de ruff.
+# E4/E7/E9/F son los clásicos (pycodestyle + pyflakes) e I el orden de imports (isort).
+select = ["E4", "E7", "E9", "F", "I"]
+
+[tool.ruff.lint.per-file-ignores]
+# conftest fija SDL_VIDEODRIVER antes de importar pygame.
+"tests/conftest.py" = ["E402"]
+# Las escenas son scripts de DSL: Scene.load las ejecuta con exec() inyectando
+# `add`, y sus imports existen para quien escribe escenas (Sensor puede no usarse).
+"scenes/*.py" = ["F821", "F401"]
