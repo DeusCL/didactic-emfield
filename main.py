@@ -1,7 +1,6 @@
 import pygame as pg
 import sys
 
-import pyautogui
 import datetime
 import os
 
@@ -49,7 +48,7 @@ class App:
 		self._fullscreen = is_fullscreen
 
 		if is_fullscreen == True:
-			max_win_res = pyautogui.size()
+			max_win_res = pg.display.get_desktop_sizes()[0]
 			self.surface = pg.Surface(max_win_res).convert_alpha()
 			self.window = pg.display.set_mode(
 				max_win_res, pg.FULLSCREEN, vsync=VSYNC

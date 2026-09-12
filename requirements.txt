@@ -1,3 +1,2 @@
-pygame-ce >= 2.4.1
-pyautogui
+pygame-ce
 numba
