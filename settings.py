@@ -1,5 +1,7 @@
 from pathlib import Path
 
+
+
 # display
 WIN_RES = (1600, 900)
 FULLSCREEN = False

@@ -1,16 +1,15 @@
 import os
+import random
+
 import pygame as pg
 
 from . import maths
-from .grid import Grid
 from .camera import Camera
 from .field import Field
-from .particle import *
+from .grid import Grid
+from .particle import CargaLibre
+from settings import CURSOR_HAND_CLOSED, CURSOR_HAND_OPEN, SCENES_DIR
 
-import random
-import math
-
-from settings import *
 
 
 class Scene:

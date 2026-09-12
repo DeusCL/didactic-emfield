@@ -1,6 +1,7 @@
 import pygame as pg
 
 
+
 class Grid:
 	def __init__(self, app):
 		self.app = app

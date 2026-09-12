@@ -2,7 +2,6 @@ import pygame as pg
 
 from . import maths
 
-from settings import ARROW_CENTERED
 
 
 def arrow(surface, color, start_pos, end_pos, arrow_size=10, line_width=3):

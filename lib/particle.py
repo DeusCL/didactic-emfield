@@ -1,10 +1,9 @@
-import pygame as pg
 from typing import TYPE_CHECKING
 
-from . import maths
-from . import custom_draw as cdraw
+import pygame as pg
 
-from settings import *
+from . import custom_draw as cdraw
+from . import maths
 
 if TYPE_CHECKING:
 	from .scene import Scene

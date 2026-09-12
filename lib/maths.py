@@ -1,7 +1,9 @@
 import math
 
-from settings import *
 from numba import njit
+
+from settings import ARROW_LENGTH, K
+
 
 
 def smooth_step(start_value, target_value, smoothness=10, dt=1/60.0):

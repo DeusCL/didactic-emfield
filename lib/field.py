@@ -2,8 +2,7 @@ import pygame as pg
 
 from . import custom_draw as cdraw
 from . import maths
-
-from settings import *
+from settings import ARROW_SPREAD
 
 
 

@@ -1,6 +1,17 @@
 import pygame as pg
 
-from settings import *
+from settings import (
+	COLOR_BG_1,
+	COLOR_BG_2,
+	COLOR_OUTLINE_1,
+	COLOR_OUTLINE_2,
+	COLOR_TEXT,
+	CURSOR_HAND_FINGER,
+	DARK_GRAY_2,
+	FONT_2,
+	ORANGE,
+)
+
 
 
 class Widget:

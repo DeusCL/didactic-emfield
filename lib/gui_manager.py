@@ -1,10 +1,9 @@
 import pygame as pg
 
-from .gui import *
-from .text_field import TextField
+from .gui import Button, Dialog, Label
 from .particle import Carga, Sensor
-
-from settings import *
+from .text_field import TextField
+from settings import FONT_2, IMG_CHARGE, IMG_SAVE, IMG_SENSOR, IMG_TRASH, WHITE
 
 
 

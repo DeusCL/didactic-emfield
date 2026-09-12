@@ -2,8 +2,16 @@ import pygame as pg
 import pyperclip
 
 from .gui import Widget
-
-from settings import *
+from settings import (
+	CURSOR_TEXT_MARKER,
+	GRAY,
+	GREEN,
+	LIGHT_GRAY,
+	LIGHT_GRAY2,
+	ORANGE,
+	RED,
+	WHITE,
+)
 
 
 

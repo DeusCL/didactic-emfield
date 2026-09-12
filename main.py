@@ -1,14 +1,28 @@
-import pygame as pg
-import sys
-
 import datetime
 import os
+import sys
 from pathlib import Path
 
-from lib.scene import Scene
-from lib.gui_manager import GuiManager
+import pygame as pg
 
-from settings import *
+from lib.gui_manager import GuiManager
+from lib.scene import Scene
+from settings import (
+	BG_COLOR,
+	CURSOR_HAND_CLOSED,
+	CURSOR_HAND_CLOSED_FILEPATH,
+	CURSOR_HAND_FINGER,
+	CURSOR_HAND_OPEN,
+	CURSOR_HAND_OPEN_FILEPATH,
+	CURSOR_NORMAL,
+	CURSOR_TEXT_MARKER,
+	CURSOR_TEXT_MARKER_FILEPATH,
+	FONT_1,
+	FULLSCREEN,
+	SCREENSHOTS_DIR,
+	VSYNC,
+	WIN_RES,
+)
 
 
 
