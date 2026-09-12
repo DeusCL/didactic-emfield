@@ -9,12 +9,13 @@
 **Convención de commits:** un ítem = un commit (o un grupo de ítems mecánicos del mismo archivo).
 Mensajes en imperativo: `refactor(text_field): extraer helpers de portapapeles`.
 
-**Verificación obligatoria en cada commit** (los tres deben pasar):
+**Verificación obligatoria en cada commit** (los cuatro deben pasar):
 
 ```bash
-.venv/bin/pyrefly check --min-severity warn   # 0 diagnósticos
-.venv/bin/pytest -q                          # a partir de la Fase 0
-SDL_VIDEODRIVER=dummy timeout 5 .venv/bin/python main.py   # arranca y carga escena
+.venv/bin/pytest -q                                       # 30 passed, 4 xfailed
+.venv/bin/pyrefly check --min-severity warn               # 0 diagnósticos
+.venv/bin/ruff check && .venv/bin/ruff format --check     # 13 hallazgos pendientes (Fase 1)
+SDL_VIDEODRIVER=dummy timeout 5 .venv/bin/python main.py  # arranca y carga escena
 ```
 
 **Orden:** las fases están pensadas para que cada una sea verificable por separado.
@@ -22,9 +23,12 @@ No saltar de la Fase 0 a la 3 (los refactors grandes necesitan la red de segurid
 
 **Invariantes del proyecto** (mantener mientras se refactoriza):
 
-- Imports: stdlib → terceros → proyecto, un salto de línea entre grupos, alfabético
-  dentro de cada grupo, 3 líneas en blanco antes del primer bloque de código, sin `import *`.
-- Indentación con tabuladores.
+- Imports: los ordena `ruff` (`select = [..., "I"]`, isort) y son
+  stdlib → terceros → proyecto absoluto (`settings`, `lib`) → relativos (`.`), un salto de
+  línea entre grupos y alfabéticos dentro de cada grupo; **2 líneas en blanco** (PEP 8)
+  antes del primer bloque de código, aplicadas por `ruff format` (decisión D10 = A).
+  Sin `import *`.
+- Indentación con tabuladores (`indent-style = "tab"`).
 - `pyrefly.toml` mantiene el `[[sub-config]]` de `scenes/**` (son scripts de DSL).
 - Identificadores en inglés / textos de UI en español (ver Decisión D5).
 
@@ -55,33 +59,40 @@ No saltar de la Fase 0 a la 3 (los refactors grandes necesitan la red de segurid
 
 Recorte estimado al terminar: **≈450–550 líneas (~20–25%)** y 3 archivos nuevos de test.
 
+> **Tras la Fase 0:** el código de la app pasó de 2258 a **2066 líneas** (-192, casi todo por
+> el formateo: líneas en blanco y espacios), y la suite de tests son 323 líneas en `tests/`.
+
 ---
 
 ## Fase 0 - Red de seguridad y tooling (base de todo)
 
 Objetivo: poder cambiar código sin miedo. **Nada de la Fase 2/3 debería empezar antes de esto.**
 
-- [ ] **0.1 🟢** Añadir a `requirements-dev.txt`: `pytest`. Crear `pyproject.toml` con
-  `[tool.pytest.ini_options]` (`testpaths = ["tests"]`) y `[tool.ruff]`
-  (`line-length = 100`, `indent-style = "tab"`).
-- [ ] **0.2 🧪** `tests/conftest.py`: fixture `qapp` que setea `SDL_VIDEODRIVER=dummy`,
-  inicializa pygame, construye `App` y lo cierra con `pg.quit()`. Además fixture
-  `app_frame` que ejecuta un frame completo sin entrar en `run()`.
-  > Bloqueante: para esto `main.py` necesita exponer la creación del `App`
-  > (ver 3.19: `def main()`), o el test construye `App()` directo.
-- [ ] **0.3 🧪** `tests/test_maths.py` (lógica pura, sin pygame):
-  `calc_E` con 2 cargas conocidas (valores de referencia), `get_dist`, `Q_norm`,
-  `Q_alpha`, `calc_arrow_points`, `smooth_step`. **Estos son los tests que protegen la física**.
-- [ ] **0.4 🧪** `tests/test_scene_io.py`: roundtrip `Scene.save()` → `Scene.load()`
-  comparando cantidad de cargas/sensores/partículas (hoy **falla** en sensores y
-  partículas → es el test que guía B2).
-- [ ] **0.5 🧪** `tests/test_smoke.py`: importar todos los módulos y ejecutar 3 frames;
-  verificar que la escena por defecto carga con `len(charges) > 0`
-  (hoy **falla** por la ruta Windows de B15 → guía ese fix).
-- [ ] **0.6 🟢** `ruff format .` + `ruff check --fix .` en un commit **aislado y solo**
-  (toca todos los archivos; no mezclar con cambios de lógica).
+- [x] **0.1 🟢** Añadir a `requirements-dev.txt`: `pytest` + `ruff`. Crear `pyproject.toml` con
+  `[tool.pytest.ini_options]` (`testpaths = ["tests"]`, `pythonpath = ["."]`) y `[tool.ruff]`
+  (`line-length = 100`, `exclude = [".venv"]`, `indent-style = "tab"`).
+- [x] **0.2 🧪** `tests/conftest.py`: driver dummy de SDL, `pygame_session` (pg.init/pg.quit
+  por sesión), `in_repo_root` (chdir a la raíz, porque settings usa rutas relativas),
+  `qapp` (construye `App()`) y `app_frame` (3 frames como `App.run()` sin bucle).
+- [x] **0.3 🧪** `tests/test_maths.py`: 14 tests de `calc_E` (Coulomb, inversa del cuadrado,
+  saturación de `alpha`, cancelación, signo, arrow points, `Q_norm`, `get_dist`,
+  `smooth_step`). Valores anclados a la física, no a la implementación.
+- [x] **0.4 🧪** `tests/test_scene_io.py`: roundtrip `save` → `load` de cargas (pasa),
+  más 3 tests `xfail(strict=True)` para los bugs de 2.2 (sensores, partículas, nombre).
+- [x] **0.5 🧪** `tests/test_smoke.py`: imports de los 13 módulos + 3 frames completos,
+  más 1 `xfail(strict=True)` de la ruta Windows (2.4).
+- [x] **0.6 🟢** `ruff check --fix` + `ruff format` aplicados en un commit **aislado y solo**
+  (18 archivos: isort reordenó los imports, el formateador normalizó espacios y colapsó
+  líneas en blanco; **ninguna línea de lógica**). Decisión D10 resuelta como **A**.
 
-**Criterio de aceptación:** `pytest` corre, `ruff` limpio, `pyrefly` en 0.
+**Criterio de aceptación:** `pytest` corre, `pyrefly` en 0, `ruff format` estable y
+`ruff check` sin más pendientes que los ítems ya planificados de la Fase 1.
+
+**Resultado:** 30 passed + 4 xfailed (0.7 s) · `pyrefly` 0 diagnósticos ·
+`ruff format` aplicado y estable (21 archivos, **-167 líneas netas** solo por colapsar
+líneas en blanco y normalizar espacios) · `ruff check` con **13 hallazgos, todos de la
+Fase 1** (E722 ×2 → 1.18, E712 ×6 → 1.19, F841 ×5 → 1.22). Nota: los E701 (7) los resolvió
+el propio formateador al expandir los `if ...: return` de una línea → ítem 1.21 cerrado de paso.
 
 ---
 
@@ -136,6 +147,15 @@ Objetivo: poder cambiar código sin miedo. **Nada de la Fase 2/3 debería empeza
   `Scene.handle_event`, `Scene.move_charges`.
 - [ ] **1.20 🟢** `if` → `elif` en `App.check_events`, `Scene.handle_event` y
   `Button.handle_event` (donde mezcla `elif` con `if`).
+- [x] **1.21 🟢** `E701` (7): separar los `if ...: return` de una línea en
+  `grid.py:30`, `maths.py:65`, `scene.py:151,152`, `text_field.py:85,86,398`.
+  ✔ **Resuelto por el formateador** en 0.6, no hace falta tocarlo a mano.
+- [x] **1.23 🟢** `F541` / `E713` ×2 / `except ValueError as e` sin uso: los arregló
+  `ruff check --fix` en 0.6.
+- [ ] **1.22 🟢** `F841` (5, todos en `Scene.load`): `cam`, `app`, `field` y `grid`
+  nunca se usan (ni el DSL los usa hoy) y desaparecen al resolver D7/3.29. `add` **sí** se
+  usa: lo consume el código que ejecuta `exec()`, que ningún linter ve → con 3.29
+  (namespace explícito) se vuelve visible; si no, queda `# noqa: F841` con motivo.
 
 **Criterio de aceptación por commit:** pyrefly 0, pytest verde, app arranca.
 
@@ -371,6 +391,15 @@ los tests de humo de la Fase 0. No se escribe test de lo que se va a borrar (ít
 | **D7** | ¿El DSL expone solo `add`(+ `Carga`/`Sensor`) o se mantienen `cam`/`app`/`field`/`grid` documentados aunque hoy no se usen? | 3.29 |
 | **D8** | ¿`lib/` se renombra a `emfield/` con `pyproject.toml` (empaquetado real) o se mantiene la estructura plana? | 4.3 |
 | **D9** | ¿Se conservan las comodidades del editor (auto-repeat de flechas/backspace, doble clic, selección con arrastre) o se recortan? | 3.25 |
+| **D10** | Convención de líneas en blanco tras los imports: ¿3 (estilo de la casa, sin soporte de herramientas) o 2 (PEP 8, compatible con `ruff format` + isort)? | 0.6 |
+
+**D10 — resuelta: opción A.** Se adoptó PEP 8 (2 líneas en blanco) y se habilitaron
+`ruff format` + `I` (isort). Contexto del conflicto detectado: `ruff format` (equivalente a
+Black) colapsa a 2 las líneas en blanco a nivel de módulo y avisa *«The isort option
+`isort.lines-after-imports` with a value other than `-1`, `1` or `2` is incompatible with
+the formatter»*; además isort ordena el grupo del proyecto como `from settings import ...`
+**antes** de `from . import maths` (first-party antes de local-folder), al revés de lo que se
+había fijado a mano. La opción B (mantener 3 líneas, sin formateador ni isort) quedó descartada.
 
 ---
 
