@@ -1,7 +1,6 @@
 import pygame as pg
 import pyperclip
 
-from .gui import Widget
 from settings import (
 	CURSOR_TEXT_MARKER,
 	GRAY,
@@ -13,12 +12,11 @@ from settings import (
 	WHITE,
 )
 
+from .gui import Widget
 
 
 class TextField(Widget):
-	def __init__(self, guim, pos, size, caption="", dtype: type = str,
-		verificator=None):
-
+	def __init__(self, guim, pos, size, caption="", dtype: type = str, verificator=None):
 		"""
 		Initialize the TextField object.
 
@@ -35,12 +33,12 @@ class TextField(Widget):
 
 		super().__init__(guim, pos)
 
-		#self.app = app
-		#self.padding = 0, 0
+		# self.app = app
+		# self.padding = 0, 0
 
 		self.font = pg.font.SysFont("Consolas", 16)
 
-		#self.pos = pos
+		# self.pos = pos
 		self.size = size
 
 		self.dtype = dtype
@@ -66,9 +64,7 @@ class TextField(Widget):
 		self.text = ""
 		self.textsurf = self.render_textsurf()
 
-
 		self.surface = self.render_surf()
-
 
 		self.mholding = False
 		self.shifting = False
@@ -76,25 +72,24 @@ class TextField(Widget):
 
 		self.on_type = None
 
-		#double click check
+		# double click check
 		self.last_click_time = 0
 		self.last_click_pos = (0, 0)
 
-
 	def render_caption(self, caption):
-		if caption.strip() == "": return None
-		if caption == self.caption: return self.caption_surf
+		if caption.strip() == "":
+			return None
+		if caption == self.caption:
+			return self.caption_surf
 		self.caption = caption
 		return self.font.render(caption, True, WHITE)
 
-
 	def render_textsurf(self):
-		""" Create a surface for rendering text. """
+		"""Create a surface for rendering text."""
 
 		surface = pg.Surface(self.size).convert_alpha()
 		surface.fill((0, 0, 0, 0))
 		return surface
-
 
 	def render_surf(self):
 		"""
@@ -108,14 +103,9 @@ class TextField(Widget):
 		surface.fill((0, 0, 0, 0))
 
 		# Draw a border rounded filled rectangle
-		pg.draw.rect(
-			surface, GRAY,
-			(0, 0, *self.size),
-			0, *((self.border_radius,)*4)
-		)
+		pg.draw.rect(surface, GRAY, (0, 0, *self.size), 0, *((self.border_radius,) * 4))
 
 		return surface
-
 
 	def draw_cursor(self, surface):
 		"""
@@ -129,30 +119,29 @@ class TextField(Widget):
 		time = self.app.time - self.cursor_time
 		period = 1.2
 
-		if (time%period) > period*0.5:
+		if (time % period) > period * 0.5:
 			return
 
 		# Cursor positioning
 		x, y = self.pos
 
-		cursor_height = int(self.size[1]*0.8)
+		cursor_height = int(self.size[1] * 0.8)
 		cursor_x_offset = 10 + self.cursor_xpos
-		cursor_y_offset = (self.size[1] - cursor_height)//2
-		start_pos = x+cursor_x_offset, y+cursor_y_offset
-		end_pos = x+cursor_x_offset, start_pos[1]+cursor_height
+		cursor_y_offset = (self.size[1] - cursor_height) // 2
+		start_pos = x + cursor_x_offset, y + cursor_y_offset
+		end_pos = x + cursor_x_offset, start_pos[1] + cursor_height
 
 		# Draw the cursor with a line
 		pg.draw.line(surface, ORANGE, start_pos, end_pos, 2)
 
-
-	def move_cursor(self, _dir = "left"):
+	def move_cursor(self, _dir="left"):
 		tlen = len(self.text)
 		bwpos = self.cursor_bwpos
 
 		if _dir == "left":
-			bwpos = min(tlen, self.cursor_bwpos+1)
+			bwpos = min(tlen, self.cursor_bwpos + 1)
 		elif _dir == "right":
-			bwpos = max(0, self.cursor_bwpos-1)
+			bwpos = max(0, self.cursor_bwpos - 1)
 		elif _dir == "up":
 			bwpos = len(self.text)
 		elif _dir == "down":
@@ -164,7 +153,6 @@ class TextField(Widget):
 		else:
 			# If there is something selected
 			if self.selection[0] != self.selection[1]:
-
 				if _dir == "left":
 					bwpos = tlen - min(self.selection)
 				elif _dir == "right":
@@ -172,12 +160,9 @@ class TextField(Widget):
 
 				self.selection = [-1, -1]
 
-
-
 		self.cursor_bwpos = bwpos
 
 		self.update_cursor_pos()
-
 
 	def delete_text(self, k_delete=False):
 		if self.text == "":
@@ -206,28 +191,25 @@ class TextField(Widget):
 			if not k_delete:
 				if cpos == 0:
 					return
-				self.text = text[:cpos-1] + text[cpos:]
+				self.text = text[: cpos - 1] + text[cpos:]
 
 			else:
-				self.text = text[:cpos] + text[cpos+1:]
+				self.text = text[:cpos] + text[cpos + 1 :]
 				self.cursor_bwpos -= 1
 
 		self.update_text_surf()
 
-
 	def get_postext(self, pos):
-		unit, _ = self.font.size('u')
+		unit, _ = self.font.size("u")
 
 		x, _ = pos
 
-		rpos = round(max(0, x - self.pos[0] - 10)/unit)
+		rpos = round(max(0, x - self.pos[0] - 10) / unit)
 		return max(0, len(self.text) - rpos)
-
 
 	def get_selpos(self):
 		selx, sely = self.selection
 		return min(selx, sely), max(selx, sely)
-
 
 	def double_clicked(self, event):
 		if self.app.time - self.last_click_time < 0.6 and self.last_click_pos == event.pos:
@@ -243,7 +225,6 @@ class TextField(Widget):
 		self.last_click_time = self.app.time
 
 		return False
-
 
 	def handle_event(self, event):
 		"""
@@ -277,12 +258,9 @@ class TextField(Widget):
 
 					self.update_cursor_pos()
 
-
-
 		if event.type == pg.MOUSEBUTTONUP:
 			if event.button == 1:
 				self.mholding = False
-
 
 		# If the main window lost focus, then, the text field isn't focused
 		# anymore
@@ -291,9 +269,7 @@ class TextField(Widget):
 				self.focused = False
 
 		if event.type == pg.KEYDOWN and self.focused:
-
 			key = pg.key.get_pressed()
-
 
 			if event.key == pg.K_LEFT:
 				self.left_time = self.app.time
@@ -306,16 +282,14 @@ class TextField(Widget):
 			if event.key == pg.K_UP:
 				self.move_cursor("up")
 
-
 			if event.key == pg.K_DOWN:
 				self.move_cursor("down")
-
 
 			if event.key in [pg.K_LSHIFT, pg.K_RSHIFT]:
 				self.shifting = True
 
 				si, sf = self.get_selpos()
-				
+
 				if si == sf:
 					self.selection[0] = len(self.text) - self.cursor_bwpos
 					self.selection[1] = len(self.text) - self.cursor_bwpos
@@ -324,29 +298,24 @@ class TextField(Widget):
 				self.backspace_time = self.app.time
 				self.delete_text()
 
-
 			elif event.key == pg.K_c and (key[pg.K_LCTRL] or key[pg.K_RCTRL]):
 				si, sf = self.get_selpos()
-				
+
 				if si == sf:
 					pyperclip.copy("")
 
 				else:
 					pyperclip.copy(self.text[si:sf])
 
-
-
 			elif event.key == pg.K_x and (key[pg.K_LCTRL] or key[pg.K_RCTRL]):
 				si, sf = self.get_selpos()
-				
+
 				if si == sf:
 					pyperclip.copy("")
 
 				else:
 					pyperclip.copy(self.text[si:sf])
 					self.delete_text()
-
-
 
 			elif event.key == pg.K_v and (key[pg.K_LCTRL] or key[pg.K_RCTRL]):
 				si, sf = self.get_selpos()
@@ -366,7 +335,7 @@ class TextField(Widget):
 
 					# Adjust the position of the cursor one unit to the right
 					# of the left part of the selection
-					self.cursor_bwpos = (len(self.text) - si)-len(cv)
+					self.cursor_bwpos = (len(self.text) - si) - len(cv)
 
 				else:
 					# If the cursor position is in the end of the text
@@ -383,11 +352,9 @@ class TextField(Widget):
 
 				self.update_text_surf()
 
-
 			elif event.key == pg.K_DELETE:
 				self.delete_time = self.app.time
 				self.delete_text(k_delete=True)
-
 
 			elif event.key in (pg.K_RETURN, pg.K_KP_ENTER):
 				print(f"Text: {self.text}")
@@ -395,10 +362,11 @@ class TextField(Widget):
 			else:
 				c = event.unicode
 
-				if c == "": return
+				if c == "":
+					return
 
 				if self.dtype == int:
-					if not c in "-0123456789e":
+					if c not in "-0123456789e":
 						return
 
 					# Only one e allowed in this type of field
@@ -406,7 +374,7 @@ class TextField(Widget):
 						return
 
 				if self.dtype == float:
-					if not c in "-0.123456789e":
+					if c not in "-0.123456789e":
 						return
 
 					# Only one period allowed in this type of field
@@ -437,7 +405,7 @@ class TextField(Widget):
 
 					# Adjust the position of the cursor one unit to the right
 					# of the left part of the selection
-					self.cursor_bwpos = (len(self.text) - si)-1
+					self.cursor_bwpos = (len(self.text) - si) - 1
 
 					self.update_text_surf()
 
@@ -458,7 +426,6 @@ class TextField(Widget):
 
 				self.update_text_surf()
 
-
 		if event.type == pg.KEYUP:
 			if event.key == pg.K_DELETE:
 				self.delete_time = 0
@@ -475,24 +442,21 @@ class TextField(Widget):
 			if event.key in [pg.K_LSHIFT, pg.K_RSHIFT]:
 				self.shifting = False
 
-
 	def update_text_surf(self):
-		""" Update the text surface with the current text. """
+		"""Update the text surface with the current text."""
 
 		# Check if this field have a valid value
 
 		try:
 			if self.text != "":
 				self.dtype(self.text)
-		except ValueError as e:
+		except ValueError:
 			self.invalid_value = True
 		else:
 			self.invalid_value = False
 
-
 		if self.verificator is not None:
 			self.invalid_value = not self.verificator(self.text)
-
 
 		self.textsurf.fill((0, 0, 0, 0))
 		w, h = self.textsurf.get_size()
@@ -500,7 +464,7 @@ class TextField(Widget):
 		rendered_text_surf = self.font.render(self.text, True, WHITE)
 		tw, th = rendered_text_surf.get_size()
 
-		self.textsurf.blit(rendered_text_surf, (10, h/2 - th/2))
+		self.textsurf.blit(rendered_text_surf, (10, h / 2 - th / 2))
 
 		self.update_cursor_pos()
 
@@ -508,20 +472,18 @@ class TextField(Widget):
 		if self.on_type is not None:
 			self.on_type(self.text)
 
-
 	def update_cursor_pos(self):
 		self.cursor_time = self.app.time
 
 		if self.cursor_bwpos == 0:
 			cpos, _ = self.font.size(self.text)
 		else:
-			cpos, _ = self.font.size(self.text[:-self.cursor_bwpos])
+			cpos, _ = self.font.size(self.text[: -self.cursor_bwpos])
 
 		self.cursor_xpos = cpos
 
-
 	def check_mouse(self):
-		""" Check if the mouse is hovering over the text field. """
+		"""Check if the mouse is hovering over the text field."""
 
 		mx, my = pg.mouse.get_pos()
 		(x, y), (w, h) = self.pos, self.size
@@ -533,9 +495,8 @@ class TextField(Widget):
 		if self.hovering:
 			self.app.current_cursor = CURSOR_TEXT_MARKER
 
-
 	def update(self):
-		""" Update the text field. """
+		"""Update the text field."""
 		self.check_mouse()
 
 		if self.mholding:
@@ -546,7 +507,6 @@ class TextField(Widget):
 			self.update_cursor_pos()
 
 			self.app.current_cursor = CURSOR_TEXT_MARKER
-
 
 		# A cool way to delete letters when holding backspace
 		if self.backspace_time > 0:
@@ -568,7 +528,6 @@ class TextField(Widget):
 			if self.app.time - self.right_time > 0.5:
 				self.move_cursor("right")
 
-
 	def get_selection_text(self):
 		if self.text == "":
 			return ""
@@ -578,8 +537,7 @@ class TextField(Widget):
 		if si == sf:
 			return ""
 
-		return self.text[si:sf+1]
-
+		return self.text[si : sf + 1]
 
 	def draw_selection(self, surface):
 		selx, sely = self.selection
@@ -590,36 +548,26 @@ class TextField(Widget):
 			unit, _ = self.font.size("u")
 			x, y = self.pos
 
-			ix, iy = x+10 + unit*si, y+2
-			w, h = unit*(sf-si), self.size[1]-4
+			ix, iy = x + 10 + unit * si, y + 2
+			w, h = unit * (sf - si), self.size[1] - 4
 
-			pg.draw.rect(
-				surface, LIGHT_GRAY, (ix, iy, w, h),
-				0, *((self.border_radius,)*4)
-			)
+			pg.draw.rect(surface, LIGHT_GRAY, (ix, iy, w, h), 0, *((self.border_radius,) * 4))
 
-			pg.draw.rect(
-				surface, LIGHT_GRAY2, (ix, iy, w, h),
-				1, *((self.border_radius,)*4)
-			)
-
+			pg.draw.rect(surface, LIGHT_GRAY2, (ix, iy, w, h), 1, *((self.border_radius,) * 4))
 
 	def render(self, surface, offset=None):
 		self.update()
 
 		surface.blit(self.surface, self.pos)
 		self.draw_selection(surface)
-		surface.blit(self.textsurf, (self.pos[0], self.pos[1]+2))
+		surface.blit(self.textsurf, (self.pos[0], self.pos[1] + 2))
 
 		if self.focused:
 			# Draw cursor when focused
 			self.draw_cursor(surface)
 
 			# Draw a green border when focused
-			pg.draw.rect(
-				surface, GREEN, (*self.pos, *self.size),
-				1, *((self.border_radius,)*4)
-			)
+			pg.draw.rect(surface, GREEN, (*self.pos, *self.size), 1, *((self.border_radius,) * 4))
 
 		self.caption_surf = self.render_caption(self.caption)
 
@@ -627,18 +575,8 @@ class TextField(Widget):
 			x, y = self.pos
 			h = self.caption_surf.get_height()
 
-			surface.blit(self.caption_surf, (x, y - h*1.1))
-
+			surface.blit(self.caption_surf, (x, y - h * 1.1))
 
 		# Draw a red border if this field contains an invalid value
 		if self.invalid_value:
-			pg.draw.rect(
-				surface, RED, (*self.pos, *self.size),
-				1, *((self.border_radius,)*4)
-			)
-
-
-
-
-
-
+			pg.draw.rect(surface, RED, (*self.pos, *self.size), 1, *((self.border_radius,) * 4))

@@ -13,7 +13,6 @@ from settings import (
 )
 
 
-
 class Widget:
 	def __init__(self, guim, pos):
 		self.guim = guim
@@ -27,7 +26,6 @@ class Widget:
 
 		self._pos = pos
 
-
 	def handle_event(self, event):
 		pass
 
@@ -39,7 +37,6 @@ class Widget:
 
 	def clone(self, **kwargs) -> "Widget | None":
 		return None
-
 
 	@property
 	def pos(self):
@@ -65,22 +62,17 @@ class Widget:
 		self._pos = self._pos[0], new_y
 
 
-
 class Dialog:
 	def __init__(self, app, title, elements):
 		self.app = app
 
 		self.padding = 15, 15
 
-		self.title_label = Label(
-			app, (0, 0), title, True, ORANGE,
-			pg.font.Font(FONT_2, 18)
-		)
+		self.title_label = Label(app, (0, 0), title, True, ORANGE, pg.font.Font(FONT_2, 18))
 
 		self.elements = elements
 
 		self.organize()
-
 
 	def organize(self):
 		if len(self.elements) == 0:
@@ -100,28 +92,23 @@ class Dialog:
 			if element.y + h > most_bottom:
 				most_bottom = element.y + h
 
-		title_width = self.title_label.size[0] + 2*self.padding[0]
+		title_width = self.title_label.size[0] + 2 * self.padding[0]
 		title_height = self.title_label.size[1] + self.padding[1]
 
-		total_width = max(title_width, most_right + 2*self.padding[0])
-		total_height = max(1, most_bottom + 2*self.padding[1]) + title_height
+		total_width = max(title_width, most_right + 2 * self.padding[0])
+		total_height = max(1, most_bottom + 2 * self.padding[1]) + title_height
 
-		self.surface = pg.Surface(
-			(total_width, total_height)
-		).convert_alpha()
+		self.surface = pg.Surface((total_width, total_height)).convert_alpha()
 
 		self.surface.fill((0, 0, 0, 0))
-
 
 	def handle_event(self, event):
 		for element in self.elements:
 			element.handle_event(event)
 
-
 	def update(self):
 		for element in self.elements:
 			element.update()
-
 
 	def render(self, surface):
 		size = self.surface.get_size()
@@ -136,7 +123,7 @@ class Dialog:
 
 		# Blit the surface to the destination surface
 		w, h = pg.display.get_window_size()
-		pos = w//2 - size[0]//2, h//2 - size[1]//2
+		pos = w // 2 - size[0] // 2, h // 2 - size[1] // 2
 		surface.blit(self.surface, pos)
 
 		# Draw elements
@@ -145,7 +132,6 @@ class Dialog:
 			element.padding = padding
 			element.offset = pos
 			element.render(surface)
-
 
 
 class Label(Widget):
@@ -158,11 +144,9 @@ class Label(Widget):
 
 		self.render_text(text, antialiasing, color)
 
-
 	@property
 	def size(self):
 		return self.text_surf.get_size()
-
 
 	@property
 	def text(self):
@@ -176,7 +160,6 @@ class Label(Widget):
 		self._text = new_text
 		self.render_text(new_text, self.antialiasing, self.color)
 
-
 	@property
 	def color(self):
 		return self._color
@@ -185,7 +168,6 @@ class Label(Widget):
 	def color(self, color):
 		self._color = color
 		self.render_text(self.text, self.antialiasing, color)
-
 
 	@property
 	def antialiasing(self):
@@ -196,7 +178,6 @@ class Label(Widget):
 		self._antialiasing = value
 		self.render_text(self.text, value, self.color)
 
-
 	@property
 	def font(self):
 		return self._font
@@ -206,10 +187,8 @@ class Label(Widget):
 		self._font = font_obj
 		self.render_text(self.text, self.antialiasing, self.color)
 
-
 	def render_text(self, text, aa, color):
 		self.text_surf = self.font.render(text, aa, color)
-
 
 	def render(self, surface, offset=None):
 		pos = self.pos
@@ -220,10 +199,18 @@ class Label(Widget):
 		surface.blit(self.text_surf, pos)
 
 
-
 class Button(Widget):
-	def __init__(self, guim, pos, size, text="", on_pressed=None,
-		on_pressed_args=None, autopress_key=None, img=None):
+	def __init__(
+		self,
+		guim,
+		pos,
+		size,
+		text="",
+		on_pressed=None,
+		on_pressed_args=None,
+		autopress_key=None,
+		img=None,
+	):
 
 		super().__init__(guim, pos)
 
@@ -243,7 +230,6 @@ class Button(Widget):
 			self.on_pressed_args = on_pressed_args
 
 		self.autopress_key = autopress_key
-
 
 	def check_hovering(self):
 		cnd1 = self.scene.grabbed
@@ -269,7 +255,6 @@ class Button(Widget):
 			self.app.current_cursor = CURSOR_HAND_FINGER
 			self.scene.controls_active = False
 
-
 	def handle_event(self, event):
 		if event.type == pg.MOUSEBUTTONDOWN:
 			if event.button == 1 and self.hovering:
@@ -288,17 +273,18 @@ class Button(Widget):
 			if event.key == self.autopress_key and self.on_pressed is not None:
 				self.on_pressed(*self.on_pressed_args)
 
-
 	def update(self):
 		self.check_hovering()
 
-
 	def clone(self, **kwargs):
-		new_button = Button(self.guim, self.pos, self.size,
-			text = self.label.text,
-			on_pressed = self.on_pressed,
-			on_pressed_args = self.on_pressed_args,
-			autopress_key = self.autopress_key
+		new_button = Button(
+			self.guim,
+			self.pos,
+			self.size,
+			text=self.label.text,
+			on_pressed=self.on_pressed,
+			on_pressed_args=self.on_pressed_args,
+			autopress_key=self.autopress_key,
 		)
 
 		# Update attributes with values from kwargs
@@ -306,9 +292,6 @@ class Button(Widget):
 			setattr(new_button, key, value)
 
 		return new_button
-
-
-
 
 	def render(self, surface, offset=None):
 		# `offset` is already part of self.pos (see Widget.pos), it is only
@@ -328,15 +311,11 @@ class Button(Widget):
 
 		# Render the label
 		lw, lh = self.label.size
-		lpos = self.pos[0] + w//2 - lw//2, self.pos[1] + h//2 - lh//2 + 2
+		lpos = self.pos[0] + w // 2 - lw // 2, self.pos[1] + h // 2 - lh // 2 + 2
 		self.label.render(surface, lpos)
 
 		# Blit the img if any
 		if self.img is not None:
 			iw, ih = self.img.get_size()
-			ipos = self.pos[0] + w//2 - iw//2, self.pos[1] + h//2 - ih//2
+			ipos = self.pos[0] + w // 2 - iw // 2, self.pos[1] + h // 2 - ih // 2
 			surface.blit(self.img, ipos)
-
-
-
-

@@ -3,13 +3,13 @@ import random
 
 import pygame as pg
 
+from settings import CURSOR_HAND_CLOSED, CURSOR_HAND_OPEN, SCENES_DIR
+
 from . import maths
 from .camera import Camera
 from .field import Field
 from .grid import Grid
 from .particle import CargaLibre
-from settings import CURSOR_HAND_CLOSED, CURSOR_HAND_OPEN, SCENES_DIR
-
 
 
 class Scene:
@@ -42,13 +42,12 @@ class Scene:
 
 		self.controls_active = True
 
-
 	def save(self, textfield):
 		filename = f"{textfield.text}.py"
 		filepath = SCENES_DIR / filename
 
 		try:
-			f = open(filepath, 'w')
+			f = open(filepath, "w")
 		except:
 			return False, "Error guardando la escena, nombre inválido."
 
@@ -60,7 +59,6 @@ class Scene:
 
 		return True, "Escena guardada correctamente."
 
-
 	def add(self, prtl):
 		if prtl.charge != 0:
 			self.charges.append(prtl)
@@ -68,8 +66,7 @@ class Scene:
 		else:
 			prtl.scene = self
 			self.sensors.append(prtl)
-			print(f"\tPunto añadido a la escena.")
-
+			print("\tPunto añadido a la escena.")
 
 	def reload(self):
 		self.charges = list()
@@ -77,7 +74,6 @@ class Scene:
 
 		self.load(self.current_scene)
 		self.pause = 1
-
 
 	def handle_event(self, event):
 		if self.controls_active == False:
@@ -92,18 +88,17 @@ class Scene:
 				self.remove_the_selected()
 
 			if event.key == pg.K_k:
-				q1 = CargaLibre(self, (random.uniform(-5, 5), random.uniform(-5, 5)), random.uniform(-2, 2))
+				q1 = CargaLibre(
+					self, (random.uniform(-5, 5), random.uniform(-5, 5)), random.uniform(-2, 2)
+				)
 				q1.vel = 0, 0
-				#q2 = CargaLibre(self, (5, 0), 1)
-				#q2.vel = 0, -1
+				# q2 = CargaLibre(self, (5, 0), 1)
+				# q2.vel = 0, -1
 
 				self.particles.append(q1)
-				#self.particles.append(q2)
-
-
+				# self.particles.append(q2)
 
 		self.camera.handle_event(event)
-
 
 	def remove_the_selected(self):
 		if self.last_grabbed_particle is None:
@@ -121,9 +116,8 @@ class Scene:
 
 		self.last_grabbed_particle = None
 
-
 	def load(self, scene_file):
-		print(f"Loading \"{scene_file}\"...\n")
+		print(f'Loading "{scene_file}"...\n')
 		add = self.add
 		cam = self.camera
 		app = self.app
@@ -131,44 +125,43 @@ class Scene:
 		grid = self.grid
 
 		if os.path.exists(scene_file):
-			with open(scene_file, 'r') as file:
+			with open(scene_file, "r") as file:
 				exec(file.read())
-		print(f"\n\"{scene_file}\" load finished.")
+		print(f'\n"{scene_file}" load finished.')
 
 		self.current_scene = scene_file
-
 
 	def get_rel_pos(self, pos):
 		w, h = pg.display.get_window_size()
 		cam_pos = self.camera.pos
 
-		x_off, y_off = cam_pos[0] + w//2, cam_pos[1] + h//2
+		x_off, y_off = cam_pos[0] + w // 2, cam_pos[1] + h // 2
 
-		return (pos[0]*self.camera.zoom + x_off, pos[1]*self.camera.zoom + y_off)
-
+		return (pos[0] * self.camera.zoom + x_off, pos[1] * self.camera.zoom + y_off)
 
 	def move_charges(self):
-		if self.controls_active == False: return
-		if self.grabbed == True: return
+		if self.controls_active == False:
+			return
+		if self.grabbed == True:
+			return
 
 		w, h = pg.display.get_window_size()
 		cam_pos = self.camera.pos
 		scale = self.camera.zoom
 
-		x_off, y_off = cam_pos[0] + w//2, cam_pos[1] + h//2
+		x_off, y_off = cam_pos[0] + w // 2, cam_pos[1] + h // 2
 
 		mx, my = pg.mouse.get_pos()
 
 		left_clicking = pg.mouse.get_pressed()[0]
 		keys = pg.key.get_pressed()
 
-
 		if self.particle_grabbed is not None:
 			if left_clicking:
 				self.app.current_cursor = CURSOR_HAND_CLOSED
 
 				ox, oy = self.particle_grabbed_offset
-				grabbed_pos = (mx - x_off)/scale + ox, (my - y_off)/scale + oy
+				grabbed_pos = (mx - x_off) / scale + ox, (my - y_off) / scale + oy
 
 				if self.shifting:
 					grabbed_pos = round(grabbed_pos[0]), round(grabbed_pos[1])
@@ -185,21 +178,17 @@ class Scene:
 				self.last_grabbed_particle = self.particle_grabbed
 				self.particle_grabbed = None
 
-
 		if self.particle_grabbed is None:
 			for charge in self.charges + self.sensors:
 				x, y = self.get_rel_pos(charge.pos)
 				if maths.get_dist((x, y), (mx, my)) <= charge.get_size(self.camera.zoom) + 5:
 					self.app.current_cursor = CURSOR_HAND_OPEN
 					if left_clicking:
-						mx, my = (mx - x_off)/scale , (my - y_off)/scale
+						mx, my = (mx - x_off) / scale, (my - y_off) / scale
 						x, y = charge.pos
 						self.particle_grabbed = charge
 						self.particle_grabbed_offset = x - mx, y - my
 						break
-
-
-
 
 	def check_controls(self):
 		if self.controls_active == False:
@@ -221,16 +210,14 @@ class Scene:
 		else:
 			self.grabbed = False
 
-
 		if self.grabbed:
 			gpx, gpy = self.grabbed_pos
-			self.camera.target_pos = self.offset[0] + (mx-gpx), self.offset[1] + (my-gpy)
+			self.camera.target_pos = self.offset[0] + (mx - gpx), self.offset[1] + (my - gpy)
 
 		else:
 			self.offset = self.camera.target_pos
 
 		self.move_charges()
-
 
 	def update(self):
 		self.camera.update()
@@ -239,16 +226,15 @@ class Scene:
 		for particle in self.particles:
 			particle.update(self.app.dt)
 
-
 	def render(self, window, surface):
 		w, h = pg.display.get_window_size()
 		cam_pos = self.camera.pos
 
-		offset_pos = cam_pos[0] + w//2, cam_pos[1] + h//2
+		offset_pos = cam_pos[0] + w // 2, cam_pos[1] + h // 2
 
 		self.grid.render(window, self.camera.zoom, offset_pos)
 
-		#if self.camera.zoom < 70000:
+		# if self.camera.zoom < 70000:
 		self.field.render(surface, self.camera.zoom, offset_pos)
 
 		for charge in self.charges:
