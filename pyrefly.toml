@@ -1,0 +1,10 @@
+# Configuración de Pyrefly — https://pyrefly.org/en/docs/configuration/
+
+# Los archivos de scenes/ no son módulos normales: Scene.load() los ejecuta con
+# exec() inyectando `add`, `cam`, `app`, `field` y `grid` en el namespace.
+# Por eso Pyrefly no puede resolver `add` y silenciamos solo ese error ahí.
+[[sub-config]]
+matches = "scenes/**"
+
+[sub-config.errors]
+unknown-name = false

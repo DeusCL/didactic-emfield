@@ -10,7 +10,7 @@ class Camera:
 		self.pos = pos
 		self.smoothness = 1.5
 		self.target = None
-		self.target_pos = (0, 0)
+		self.target_pos: tuple[float, float] = (0.0, 0.0)
 		self.zoom = 30.0
 		self.target_zoom = 30.0
 

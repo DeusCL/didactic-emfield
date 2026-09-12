@@ -1,5 +1,5 @@
-from .particle import Carga
-from .particle import Sensor
+from lib.particle import Carga
+from lib.particle import Sensor
 
 
 add(Carga((7, 0), 4.4))

@@ -193,7 +193,7 @@ class GuiManager:
 		if field_pos.invalid_value or field_pos.text == "":
 			return
 
-		pos = tuple(map(float, pos_str.split(',')))
+		pos = tuple(map(float, field_pos.text.split(',')))
 		sensor = Sensor((pos[0], -pos[1]))
 		self.scene.add(sensor)
 		self.scene.last_grabbed_particle = sensor

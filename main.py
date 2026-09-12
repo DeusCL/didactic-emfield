@@ -3,6 +3,7 @@ import sys
 
 import datetime
 import os
+from pathlib import Path
 
 from lib.scene import Scene
 from lib.gui_manager import GuiManager
@@ -23,7 +24,7 @@ class App:
 		self.clock = pg.time.Clock()
 		self.font = pg.font.Font(FONT_1, 30)
 
-		self.time = 0
+		self.time = 0.0
 		self.dt = 1/60.0
 
 		self.scene = Scene(self)
@@ -39,7 +40,7 @@ class App:
 
 
 	@fullscreen.setter
-	def fullscreen(self, is_fullscreen):
+	def fullscreen(self, is_fullscreen: bool):
 		"""Set the fullscreen status of the window.
 
 		Args:
@@ -63,7 +64,7 @@ class App:
 		self.guim.generate_dialog_bg()
 
 
-	def new_cursor(self, cursor_filepath, hotspot=None):
+	def new_cursor(self, cursor_filepath: Path, hotspot: tuple[int, int] | None = None):
 		hotspot = (8, 8) if hotspot is None else hotspot
 
 		new_cursor_img = pg.image.load(cursor_filepath)

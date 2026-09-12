@@ -30,7 +30,7 @@ class Scene:
 		self.current_scene = None
 		self.pause = 1
 
-		self.offset = 0, 0
+		self.offset: tuple[float, float] = (0.0, 0.0)
 		self.grabbed = False
 		self.grabbed_pos = (0, 0)
 
@@ -53,7 +53,7 @@ class Scene:
 		except:
 			return False, "Error guardando la escena, nombre inválido."
 
-		f.write("from particle import Carga, Sensor\n\n")
+		f.write("from lib.particle import Carga, Sensor\n\n")
 		for c in self.charges:
 			x, y = c.pos
 			f.write(f"add(Carga(({x}, {y}), {c.charge}))\n")

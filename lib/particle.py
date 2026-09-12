@@ -1,9 +1,13 @@
 import pygame as pg
+from typing import TYPE_CHECKING
 
 from . import maths
 from . import custom_draw as cdraw
 
 from settings import *
+
+if TYPE_CHECKING:
+	from .scene import Scene
 
 
 
@@ -71,7 +75,7 @@ class Carga:
 		self.pos = pos
 		self.charge = charge
 		self.size = 0.000001
-		self.electric_field = 0, 0
+		self.electric_field: tuple[float, float] = (0.0, 0.0)
 
 
 	def get_size(self, scale):
@@ -99,7 +103,7 @@ class Sensor(Carga):
 		super().__init__(pos, 0)
 
 		self.size = 0.1
-		self.scene = None
+		self.scene: "Scene | None" = None
 		self.magnitude = 0
 
 
@@ -107,7 +111,8 @@ class Sensor(Carga):
 		x, y = self.pos[0]*scale + offset_pos[0], self.pos[1]*scale + offset_pos[1]
 		px, py = self.pos
 
-		self.electric_field, alpha = maths.calc_E(self.scene.charges, px, py)
+		charges = [] if self.scene is None else self.scene.charges
+		self.electric_field, alpha = maths.calc_E(charges, px, py)
 
 		E = self.electric_field
 		rscale = 1000

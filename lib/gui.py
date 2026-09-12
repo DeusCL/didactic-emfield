@@ -26,9 +26,8 @@ class Widget:
 	def render(self, surface, offset=None):
 		pass
 
-
-	def clone(self):
-		pass
+	def clone(self, **kwargs) -> "Widget | None":
+		return None
 
 
 	@property
@@ -275,7 +274,7 @@ class Button(Widget):
 				self.pressing = False
 
 		if event.type == pg.KEYDOWN:
-			if event.key == self.autopress_key:
+			if event.key == self.autopress_key and self.on_pressed is not None:
 				self.on_pressed(*self.on_pressed_args)
 
 
@@ -300,7 +299,9 @@ class Button(Widget):
 
 
 
-	def render(self, surface):
+	def render(self, surface, offset=None):
+		# `offset` is already part of self.pos (see Widget.pos), it is only
+		# accepted here to keep the Widget.render signature.
 		# Adjust the color
 		color = COLOR_BG_2
 		outline_color = COLOR_OUTLINE_1

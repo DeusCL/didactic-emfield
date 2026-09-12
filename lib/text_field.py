@@ -8,7 +8,7 @@ from settings import *
 
 
 class TextField(Widget):
-	def __init__(self, guim, pos, size, caption="", dtype=str,
+	def __init__(self, guim, pos, size, caption="", dtype: type = str,
 		verificator=None):
 
 		"""
@@ -139,6 +139,7 @@ class TextField(Widget):
 
 	def move_cursor(self, _dir = "left"):
 		tlen = len(self.text)
+		bwpos = self.cursor_bwpos
 
 		if _dir == "left":
 			bwpos = min(tlen, self.cursor_bwpos+1)
@@ -474,7 +475,7 @@ class TextField(Widget):
 
 		try:
 			if self.text != "":
-				number = self.dtype(self.text)
+				self.dtype(self.text)
 		except ValueError as e:
 			self.invalid_value = True
 		else:
@@ -564,7 +565,7 @@ class TextField(Widget):
 		if self.text == "":
 			return ""
 
-		si, sf = min(selx, sely), max(selx, sely)
+		si, sf = self.get_selpos()
 
 		if si == sf:
 			return ""
@@ -595,7 +596,7 @@ class TextField(Widget):
 			)
 
 
-	def render(self, surface):
+	def render(self, surface, offset=None):
 		self.update()
 
 		surface.blit(self.surface, self.pos)
